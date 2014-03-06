@@ -5,6 +5,4 @@ module.exports = function (action) {
         action.retryCount -= 1
         result = action.execute();
     }
-
-    return result;
 }

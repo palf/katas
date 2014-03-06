@@ -1,25 +1,20 @@
 var Action = require('./action');
 var AsyncAction = require('./asyncAction');
-var Promise = require('promise');
 
 
 function throwParade() { console.log('parade! :D') };
 function throwTantrum() { console.log('tantrum :(') };
 
 
-function getFlipCoinPromise () {
-    function flipper (resolve, reject) {
-        var value = Math.random() > 0.5;
-        if (value) {
-            resolve();
-        } else {
-            reject();
-        }
+function flipCoin (resolve, reject) {
+    var value = Math.random() > 0.5;
+    if (value) {
+        resolve(value);
+    } else {
+        reject(value);
     }
-
-    var promise = new Promise(flipper);
-    return promise;
 }
+
 
 function rollMatches (value) {
     return function () {
@@ -40,8 +35,5 @@ exports.rollDice = function (value) {
 
 
 exports.postMessageAction = function (value) {
-    var flipCoin = getFlipCoinPromise();
-    var action = new AsyncAction(flipCoin);
-
-    return action;
+    return new AsyncAction(flipCoin);
 }
