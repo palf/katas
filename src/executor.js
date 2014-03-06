@@ -6,11 +6,5 @@ module.exports = function (action) {
         result = action.execute();
     }
 
-    if (result) {
-        action.onSuccess();
-    } else {
-        action.onFailure();
-    }
-
     return result;
 }
