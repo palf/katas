@@ -1,14 +1,20 @@
-var actions = require('./src/actionFactory');
-var execute = require('./src/executor');
+var factory = require('./src/actionFactory');
 
-var createEndpoint = actions.rollDiceAction(4);         // 1/6
-var createSubscription = actions.flipCoinAction();      // 3/6
-var poll = actions.antiRollDiceAction(6);                // 5/6
+var stepOne = factory.buildFlipCoinAction();
+var stepTwo = factory.buildFlipCoinAction();
+var stepThree = factory.buildFlipCoinAction();
 
+stepOne.onSuccess = function (string) {
+    console.log('Success value: ' + string);
+    stepTwo.execute(string);
+};
+stepTwo.onSuccess = function (string) {
+    console.log('Success value: ' + string);
+    stepThree.execute(string);
+};
+stepThree.onSuccess = function (string) {
+    console.log('Success value: ' + string);
+    stepThree.execute(string);
+};
 
-createEndpoint.successAction = createSubscription;
-createSubscription.successAction = poll;
-poll.successAction = poll;
-
-createEndpoint.execute();
-
+stepOne.execute('');
