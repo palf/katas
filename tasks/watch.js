@@ -7,4 +7,4 @@ exports.config= {
         files: '<%= jshint.lib_test.src %>',
         tasks: ['jshint:lib_test', 'nodeunit']
     }
-}
+};

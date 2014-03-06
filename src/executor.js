@@ -5,5 +5,12 @@ module.exports = function (action) {
         action.retryCount -= 1
         result = action.execute();
     }
+
+    if (result) {
+        action.onSuccess();
+    } else {
+        action.onFailure();
+    }
+
     return result;
 }
