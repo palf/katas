@@ -1,23 +1,29 @@
 var Promise = require('promise');
 
-var AsyncAction = function (thingToExecute) {
-    this.execute = function () {
-        console.log('executing');
-        var promise = new Promise(thingToExecute);
+function AsyncAction (thingToExecute) {
+    var self = this;
 
+    self.retryCount = 5;
+
+    self.execute = function () {
+        var promise = new Promise(thingToExecute);
         promise.then(onSuccess, onFailure);
     };
 
-    var retry = this.execute;
+    function onSuccess (value) {
+        console.log('Success! got ' + value);
+        self.successAction.execute();
+    }
 
-    function onSuccess (x) { console.log('Success! got ' + x); };
-    function onFailure (x) {
-        console.log('Failure! try again');
-        retry();
-    };
-
-
-    this.retryCount = 5;
+    function onFailure () {
+        self.retryCount--;
+        if (self.retryCount > 0) {
+            console.log('Failure! retrying');
+            self.execute();
+        } else {
+            console.log('Failure! given up');
+        }
+    }
 }
 
 module.exports = AsyncAction;

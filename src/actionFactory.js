@@ -2,8 +2,13 @@ var Action = require('./action');
 var AsyncAction = require('./asyncAction');
 
 
-function throwParade() { console.log('parade! :D') };
-function throwTantrum() { console.log('tantrum :(') };
+function getNullAction () {
+    return {
+        execute: function () {
+            console.log('executing null');
+        }
+    }
+}
 
 
 function flipCoin (resolve, reject) {
@@ -17,23 +22,42 @@ function flipCoin (resolve, reject) {
 
 
 function rollMatches (value) {
-    return function () {
+    return function (resolve, reject) {
         var roll = Math.floor( Math.random() * 6 ) + 1;
-        console.log('rolled a ' + roll);
-        return roll === value;
+        if (roll === value) {
+            resolve(value);
+        } else {
+            reject(value);
+        }
+    }
+}
+
+function rollDoesNotMatch (value) {
+    return function (resolve, reject) {
+        var roll = Math.floor( Math.random() * 6 ) + 1;
+        if (roll !== value) {
+            resolve(value);
+        } else {
+            reject(value);
+        }
     }
 }
 
 
-exports.rollDice = function (value) {
+exports.flipCoinAction = function (value) {
+    return new AsyncAction(flipCoin);
+}
+
+
+exports.rollDiceAction = function (value) {
     var rollDice = rollMatches(value);
-    var action = new Action(rollDice);
-    action.onSuccess = throwParade;
-    action.onFailure = throwTantrum;
+    var action = new AsyncAction(rollDice);
+    action.successAction = getNullAction();
     return action;
 }
 
 
-exports.postMessageAction = function (value) {
-    return new AsyncAction(flipCoin);
+exports.antiRollDiceAction = function (value) {
+    var rollDice = rollDoesNotMatch(value);
+    return new AsyncAction(rollDice);
 }
