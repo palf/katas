@@ -2,8 +2,8 @@ module.exports = function (grunt) {
 	'use strict';
 
     var config = {
-        jshint: require('./tasks/lint').config,
-        nodeunit: require('./tasks/unit').config,
+        lint: require('./tasks/lint').config,
+        unit: require('./tasks/unit').config,
         watch: require('./tasks/watch').config
     };
 
@@ -13,5 +13,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['jshint', 'nodeunit']);
+    grunt.renameTask('jshint', 'lint');
+    grunt.renameTask('nodeunit', 'unit');
+
+    grunt.registerTask('default', ['lint', 'unit']);
 };

@@ -19,9 +19,9 @@ exports.config = {
     gruntfile: {
         src: 'gruntfile.js'
     },
-    lib_test: {
+    src: {
         src: [
-            'lib/**/*.js',
+            'src/**/*.js',
             'test/**/*.js',
             'tasks/**/*.js'
         ]
