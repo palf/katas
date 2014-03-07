@@ -16,11 +16,9 @@ exports.config = {
             jQuery: true
         }
     },
-    gruntfile: {
-        src: 'gruntfile.js'
-    },
-    src: {
+    source: {
         src: [
+            'gruntfile.js',
             'src/**/*.js',
             'test/**/*.js',
             'tasks/**/*.js'

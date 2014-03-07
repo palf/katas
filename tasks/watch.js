@@ -1,10 +1,10 @@
-exports.config= {
-    gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
+exports.config = {
+    lint: {
+        files: '<%= lint.source.src %>',
+        tasks: [ 'lint' ]
     },
-    lib_test: {
-        files: '<%= jshint.lib_test.src %>',
-        tasks: ['jshint:lib_test', 'nodeunit']
+    unit: {
+        files: '<%= lint.source.src %>',
+        tasks: [ 'unit' ]
     }
 };
