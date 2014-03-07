@@ -1,4 +1,4 @@
-var Action = require('./action');
+// var Action = require('./action');
 var AsyncAction = require('./asyncAction');
 
 function flipCoin (string) {
@@ -9,7 +9,7 @@ function flipCoin (string) {
         } else {
             reject(string + 't');
         }
-    }
+    };
 }
 
 exports.buildFlipCoinAction = function () {

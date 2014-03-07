@@ -2,7 +2,6 @@ var Promise = require('promise');
 
 function AsyncAction (thingToExecute) {
     var self = this;
-    var initialValue = null;
 
     self.retryCount = 5;
 
@@ -12,7 +11,7 @@ function AsyncAction (thingToExecute) {
         promise.then(self.onSuccess, onFailure);
     };
 
-    function onFailure (value) {
+    function onFailure () {
         self.retryCount--;
         if (self.retryCount > 0) {
             console.log('Failure! retrying');
