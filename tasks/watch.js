@@ -3,8 +3,8 @@ exports.config = {
         files: '<%= lint.source.src %>',
         tasks: [ 'lint' ]
     },
-    unit: {
+    spec: {
         files: '<%= lint.source.src %>',
-        tasks: [ 'unit' ]
+        tasks: [ 'spec' ]
     }
 };

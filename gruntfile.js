@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 
     var config = {
         lint: require('./tasks/lint').config,
-        unit: require('./tasks/unit').config,
+        spec: require('./tasks/spec').config,
         watch: require('./tasks/watch').config
     };
 
@@ -14,7 +14,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.renameTask('jshint', 'lint');
-    grunt.renameTask('nodeunit', 'unit');
+    grunt.renameTask('nodeunit', 'spec');
 
-    grunt.registerTask('default', ['lint', 'unit']);
+    grunt.registerTask('default', ['lint', 'spec']);
 };
