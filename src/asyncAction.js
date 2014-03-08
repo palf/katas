@@ -1,21 +1,25 @@
 var Promise = require('promise');
 
-function AsyncAction (thingToExecute) {
-    var self = this;
-
-    self.retryCount = 5;
+function AsyncAction (callback) {
+    var self = this,
+        retryCount = 5,
+        initialValue;
 
     self.execute = function (value) {
-        self.initialValue = value;
-        var promise = new Promise(thingToExecute(value));
-        promise.then(self.onSuccess, onFailure);
+        initialValue = value;
+        var promise = new Promise(callback(value));
+        promise.then(onSuccess, onFailure);
     };
 
+    function onSuccess (v) {
+        self.onSuccess(v);
+    }
+
     function onFailure () {
-        self.retryCount--;
-        if (self.retryCount > 0) {
+        retryCount --;
+        if (retryCount > 0) {
             console.log('Failure! retrying');
-            self.execute(self.initialValue);
+            self.execute(initialValue);
         } else {
             console.log('Failure! given up');
         }

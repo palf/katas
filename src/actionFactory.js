@@ -1,17 +1,20 @@
-// var Action = require('./action');
 var AsyncAction = require('./asyncAction');
 
-function flipCoin (string) {
+function flipCoin () {
+    return Math.random() > 0.5;
+}
+
+function wrap (data) {
     return function (resolve, reject) {
-        var value = Math.random() > 0.5;
+        var value = flipCoin();
         if (value) {
-            resolve(string + 'h');
+            resolve(data + 'h');
         } else {
-            reject(string + 't');
+            reject(data + 't');
         }
     };
 }
 
 exports.buildFlipCoinAction = function () {
-    return new AsyncAction(flipCoin);
+    return new AsyncAction(wrap);
 };
