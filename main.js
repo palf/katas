@@ -1,19 +1,18 @@
+'use strict';
+
 var build = require('./src/actionBuilder');
 var games = require('./src/games');
 
-var stepOne = build.buildAction(games.flipCoin);
-var stepTwo = build.buildAction(games.flipCoin);
-var stepThree = build.buildAction(games.flipCoin);
+var stepOne = build.asyncAction(games.flipCoin);
+var stepTwo = build.asyncAction(games.flipCoin);
+var stepThree = build.asyncAction(games.flipCoin);
 
-function logThenExecute (action) {
-    return function (result) {
-        console.log('result: ' + result);
-        action.execute(result);
-    }
+stepOne.onSuccess = stepTwo.execute;
+stepTwo.onSuccess = stepThree.execute;
+stepThree.onSuccess = stepThree.execute;
+
+stepThree.onFailure = function (value) {
+    console.log(value);
 }
-
-stepOne.onSuccess = logThenExecute(stepTwo);
-stepTwo.onSuccess = logThenExecute(stepThree);
-stepThree.onSuccess = logThenExecute(stepThree);
 
 stepOne.execute('');

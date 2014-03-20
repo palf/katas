@@ -1,3 +1,5 @@
+'use strict';
+
 exports.config = {
     lint: {
         files: '<%= lint.source.src %>',

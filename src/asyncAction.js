@@ -1,29 +1,44 @@
+    'use strict';
+
 var Promise = require('promise');
 
-function AsyncAction (callback) {
+function AsyncAction (outerFunc) {
+
+    function wrapForPromise () {
+        return function promiseWrapper (resolve, reject) {
+            var result = outerFunc(initialValue);
+            if (result) {
+                resolve(initialValue);
+            } else {
+                reject(initialValue);
+            }
+        };
+    }
+
     var self = this,
         retryCount = 5,
         initialValue;
 
-    self.execute = function (value) {
-        initialValue = value;
-        var promise = new Promise(callback(value));
-        promise.then(onSuccess, onFailure);
-    };
-
-    function onSuccess (v) {
-        self.onSuccess(v);
+    function onSuccess () {
+        self.onSuccess(initialValue);
     }
 
     function onFailure () {
         retryCount --;
         if (retryCount > 0) {
-            console.log('Failure! retrying');
-            self.execute(initialValue);
+            self.onFailure(initialValue);
         } else {
-            console.log('Failure! given up');
+            // console.log('Failure! given up');
         }
     }
+
+    this.execute = function (value) {
+        initialValue = value;
+
+        var promiseWrapped = wrapForPromise();
+        var promise = new Promise(promiseWrapped);
+        promise.then(onSuccess, onFailure);
+    };
 }
 
 module.exports = AsyncAction;

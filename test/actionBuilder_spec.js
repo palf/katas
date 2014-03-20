@@ -1,10 +1,12 @@
+'use strict';
+
 var ActionBuilder = require('../src/actionBuilder');
 var AsyncAction = require('../src/asyncAction');
 
-exports['buildAction(func)'] = {
-    'returns a flip coin action': function(test) {
+exports['asyncAction(func)'] = {
+    'returns an async action': function(test) {
         test.expect(1);
-        var result = ActionBuilder.buildAction();
+        var result = ActionBuilder.asyncAction();
         var check = result instanceof AsyncAction;
         test.ok(check, "expected an AsyncAction");
         test.done();
