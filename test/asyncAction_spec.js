@@ -4,11 +4,15 @@ var AsyncAction = require('../src/asyncAction');
 
 function alwaysSucceeds () { return true; }
 function alwaysFails () { return false; }
+function completeTest (test, check) {
+    test.ok(check, 'expected true');
+    test.done();
+}
 
 exports['#execute(value)'] = {
     'executes the callback with the passed value': function(test) {
         var passedArg, check, value = {};
-        function externalFunc (x) { passedArg = x; }
+        function externalFunc (input) { passedArg = input; }
         var action = new AsyncAction(externalFunc);
         action.execute(value);
         check = (passedArg === value);
@@ -17,38 +21,16 @@ exports['#execute(value)'] = {
     },
 
     'calls only the onSuccess handler when the function returns true': function(test) {
-        var check = false;
         var action = new AsyncAction(alwaysSucceeds);
-
-        function completeTest () {
-            test.ok(check, 'expected success handler to be called');
-            test.done();
-        }
-
-        action.onFailure = completeTest;
-        action.onSuccess = function () {
-            check = true;
-            completeTest();
-        };
-
+        action.onSuccess = function () { completeTest(test, true); };
+        action.onFailure = function () { completeTest(test, false); };
         action.execute();
     },
 
     'calls only the onFailure handler when the function returns true': function(test) {
-        var check = false;
         var action = new AsyncAction(alwaysFails);
-
-        function completeTest () {
-            test.ok(check, 'expected success handler to be called');
-            test.done();
-        }
-
-        action.onSuccess = completeTest;
-        action.onFailure = function () {
-            check = true;
-            completeTest();
-        };
-
+        action.onSuccess = function () { completeTest(test, false); };
+        action.onFailure = function () { completeTest(test, true); };
         action.execute();
     },
 
