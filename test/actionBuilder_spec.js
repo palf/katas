@@ -1,10 +1,10 @@
 var ActionBuilder = require('../src/actionBuilder');
 var AsyncAction = require('../src/asyncAction');
 
-exports['buildFlipCoinAction()'] = {
+exports['buildAction(func)'] = {
     'returns a flip coin action': function(test) {
         test.expect(1);
-        var result = ActionBuilder.buildFlipCoinAction();
+        var result = ActionBuilder.buildAction();
         var check = result instanceof AsyncAction;
         test.ok(check, "expected an AsyncAction");
         test.done();
