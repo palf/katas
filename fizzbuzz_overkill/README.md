@@ -16,18 +16,14 @@ I spent nearly three hours on this. I did have a sandwich in the middle though.
 - Install Node.js
 - Get the code (git clone or just copy it)
 
-- In your termimal, run `node fizzbuzz_spec` to run the tests.
-- In your code, add `var fizzbuzz = require('path/to/fizzbuzz/file').fizzbuzz`; then you can call `fizzbuzz(x)` in your code
+- In your termimal, run `node test` to run the tests.
+- In your code, add `var fizzbuzz = require('path/to/fizzbuzz/file')`; then you can call `fizzbuzz(x)` in your code
     - replace the path/to/file etc with the actual path
     - replace (x) with a numerical value (3 is nice)
 
 ## Issues / Analysis
 
 The number sequence checker `isMultipleOf` takes a numerator and a denominator. It assumes you're checking the existence of `n` (numerator) in the set defined as the integers scaled by `d` (denominator). In other words, is `n` in [ ... -2d, -d, 0, d, 2d ... ].
-
-The export of `fizzbuzz` is bound with the first variable `matchWords`. In your own code, remove this and just export `fizzbuzz`; this will let you specify new word groupings to match against! Maybe you could extend the game, so every 7th word is 'bonk':
-
-    fizzbuzz({ 3: 'fizz', 5: 'buzz', 7: 'bonk' }, 105) === 'fizzbuzzbonk';
 
 The order of matches is dependent on the order of keys in the hash... Oh right, theres no ordered hash in Javascript. Nevertheless, it seems to always perform the checks in ascending order of keys. Does it really matter for this case if we get 'buzzfizz' instead of 'fizzbuzz'? Or do we only care that the correct substrings are returned? Admittedly the tests assume the former, where I'd choose the latter.
 

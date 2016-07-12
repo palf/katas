@@ -1,6 +1,6 @@
 var assert = require('assert');
-var fizzbuzz = require('./fizzbuzz').fizzbuzz;
-var isMultipleOf = require('./fizzbuzz').isMultipleOf;
+var fizzbuzz = require('./fizzbuzz');
+var isMultipleOf = require('./isMultipleOf');
 
 // laziest test code ever
 // this project is clearly not a shining example of development
