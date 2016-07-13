@@ -27,7 +27,7 @@ exports['#execute(value)'] = {
         action.execute();
     },
 
-    'calls only the onFailure handler when the function returns true': function(test) {
+    'calls only the onFailure handler when the function returns false': function(test) {
         var action = new AsyncAction(alwaysFails);
         action.onSuccess = function () { completeTest(test, false); };
         action.onFailure = function () { completeTest(test, true); };
