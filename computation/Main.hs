@@ -8,11 +8,8 @@ data Expression a
   = Number a
   | Add (Expression a) (Expression a)
   | Multiply (Expression a) (Expression a)
-  | If (Expression Bool) (Expression a) (Expression a)
-  | T
-  | F
-  | Not (Expression Bool)
-  | LessThan (Expression a) (Expression a)
+  | If (Predicate a) (Expression a) (Expression a)
+  | Variable a
 
 instance (Show a) => Show (Expression a) where
   show (Number x) = show x
@@ -20,16 +17,9 @@ instance (Show a) => Show (Expression a) where
   show (Multiply l r) = "(" ++ show l ++ " * " ++ show r ++ ")"
   show (If p l r) = "(if:" ++ show p ++ " then:" ++ show l ++ " else:" ++ show r ++ ")"
   show (Variable x) = "var:" ++ show x
-  show T = "T"
-  show F = "F"
-  show (Not p) = "(not:" ++ show p ++ ")"
-  show (And l r) = "(" ++ show l ++ " :and " ++ show r ++ ")"
-  show (LessThan l r) = "(lt:" ++ show l ++ "," ++ show r ++ ")"
 
 instance (Num a, Ord a) => Reducible (Expression a) where
   isReducible (Number _) = False
-  isReducible T = False
-  isReducible F = False
   isReducible _ = True
   reduce = stepExpression
 
@@ -44,41 +34,65 @@ stepExpression (Multiply l r)
   | isReducible r = Multiply l (stepExpression r)
   | otherwise     = Number (evalExpression $ Multiply l r)
 stepExpression (If p l r)
-  | isReducible p   = If (stepExpression p) l r
-  | evalExpression p = l
+  | isReducible p   = If (stepPredicate p) l r
+  | evalPredicate p = l
   | otherwise       = r
 stepExpression (Variable x) = Variable x
-stepExpression T = T
-stepExpression F = F
-stepExpression (Not p)
-  | isReducible p = Not (stepExpression p)
-  | otherwise     = runNot p
-  where runNot T = F
-        runNot F = T
-stepExpression (And l r)
-  | isReducible l = And (stepExpression l) r
-  | isReducible r = And l (stepExpression r)
-  | otherwise     = runAnd l r
-  where runAnd T T = T
-        runAnd _ _ = F
-stepExpression (LessThan l r)
-  | isReducible l = LessThan (stepExpression l) r
-  | isReducible r = LessThan l (stepExpression r)
-  | otherwise     = runLessThan l r
-  where runLessThan l r | evalExpression (LessThan l r) = T | otherwise = F
 
 evalExpression :: (Num a, Ord a) => Expression a -> a
 evalExpression (Number x) = x
 evalExpression (Add l r) = (evalExpression l) + (evalExpression r)
 evalExpression (Multiply l r) = (evalExpression l) * (evalExpression r)
 evalExpression (If p l r)
-  | evalExpression p = evalExpression l
+  | evalPredicate p = evalExpression l
   | otherwise = evalExpression r
-evalExpression T = True
-evalExpression F = False
-evalExpression (Not p) = not (evalExpression p)
-evalExpression (And l r) = (evalExpression l) && (evalExpression r)
-evalExpression (LessThan l r) = (evalExpression l) < (evalExpression r)
+
+data Predicate a
+  = T
+  | F
+  | Not (Predicate a)
+  | And (Predicate a) (Predicate a)
+  | LessThan (Expression a) (Expression a)
+
+instance (Show a) => Show (Predicate a) where
+  show T = "T"
+  show F = "F"
+  show (Not p) = "(not:" ++ show p ++ ")"
+  show (And l r) = "(" ++ show l ++ " :and " ++ show r ++ ")"
+  show (LessThan l r) = "(lt:" ++ show l ++ "," ++ show r ++ ")"
+
+instance (Num a, Ord a) => Reducible (Predicate a) where
+  isReducible T = False
+  isReducible F = False
+  isReducible _ = True
+  reduce = stepPredicate
+
+stepPredicate :: (Num a, Ord a) => (Predicate a) -> (Predicate a)
+stepPredicate T = T
+stepPredicate F = F
+stepPredicate (Not p)
+  | isReducible p = Not (stepPredicate p)
+  | otherwise     = runNot p
+  where runNot T = F
+        runNot F = T
+stepPredicate (And l r)
+  | isReducible l = And (stepPredicate l) r
+  | isReducible r = And l (stepPredicate r)
+  | otherwise     = runAnd l r
+  where runAnd T T = T
+        runAnd _ _ = F
+stepPredicate (LessThan l r)
+  | isReducible l = LessThan (stepExpression l) r
+  | isReducible r = LessThan l (stepExpression r)
+  | otherwise     = runLessThan l r
+  where runLessThan l r | evalPredicate (LessThan l r) = T | otherwise = F
+
+evalPredicate :: (Num a, Ord a) => Predicate a -> Bool
+evalPredicate T = True
+evalPredicate F = False
+evalPredicate (Not p) = not (evalPredicate p)
+evalPredicate (And l r) = (evalPredicate l) && (evalPredicate r)
+evalPredicate (LessThan l r) = (evalExpression l) < (evalExpression r)
 
 runWithM :: (Monad m, Num a, Ord a, Show a) => Expression a -> (Expression a -> m b) -> m ()
 runWithM expression operation = do
