@@ -11,10 +11,11 @@ someExpression = x8
         x5 = Add x1 x4
         x6 = Multiply x4 x5
         x7 = LessThan x5 x6
-        x8 = If x7 x4 x3
+        x8 = If x7 x4 x5
 
 main :: IO ()
 main = do
   print someExpression
-  print $ step someExpression
-  print $ reduce someExpression
+--  print $ step someExpression
+--  print $ reduce someExpression
+  stepReduceM someExpression print

@@ -1,5 +1,6 @@
  module Lib (
   Reducible(..),
+  stepReduceM,
   Expression(..)
 ) where
 

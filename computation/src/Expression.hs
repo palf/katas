@@ -18,6 +18,7 @@ instance (Show a) => Show (Expression a) where
   show (Multiply l r) = "(multiply: " ++ show l ++ ", " ++ show r ++ ")"
   show (If p l r) = "(if: " ++ show p ++ " then: " ++ show l ++ " else: " ++ show r ++ ")"
   show (LessThan l r) = "(<: " ++ show l ++ ", " ++ show r ++ ")"
+  show _ = "(?:)"
 
 instance Reducible (Expression) where
   step = stepExpression
