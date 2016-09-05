@@ -11,5 +11,5 @@ class Reducible t where
 stepReduceM :: (Monad m, Reducible t) => t a -> (t a -> m b) -> m ()
 stepReduceM box op = do
   op box
-  either (flip stepReduceM $ op) (void) (step box)
+  either (`stepReduceM` op) void (step box)
     where void x = return ()
