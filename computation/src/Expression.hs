@@ -32,43 +32,31 @@ stepExpression (Multiply l r) = Left $ runMultiply l r
 stepExpression (If p l r) = Left $ runIf p l r
 stepExpression (LessThan l r) = Left $ runLessThan l r
 
-update1 :: (Num a) => (Expression t -> Expression a) -> (t -> a) -> Expression t -> Expression a
-update1 key f x1 = parseFirst
-  where
-    parseFirst = either updateFirst wrapOperation (stepExpression x1)
-    updateFirst = key
-    wrapOperation x = Number (f x)
+update1 :: (Expression t -> Expression a) -> (t -> Expression a) -> Expression t -> Expression a
+update1 key f x1 = either key f (stepExpression x1)
 
-update2 :: (Num a) => (Expression t1 -> Expression t2 -> Expression a) -> (t1 -> t2 -> a) -> Expression t1 -> Expression t2 -> Expression a
+update2 :: (Expression t1 -> Expression t2 -> Expression a) -> (t1 -> t2 -> Expression a) -> Expression t1 -> Expression t2 -> Expression a
 update2 key f l r = parseLeft
   where
-    parseLeft = either updateLeft parseRight (stepExpression l)
-    parseRight x = either updateRight (wrapOperation x) (stepExpression r)
+    parseLeft = update1 updateLeft parseRight l
+    parseRight x = update1 updateRight (f x) r
     updateLeft x = key x r
     updateRight = key l
-    wrapOperation x y = Number (f x y)
 
 runAdd :: (Num a) => Expression a -> Expression a -> Expression a
-runAdd = update2 Add (+)
+runAdd = update2 Add (\x y -> Number $ x + y)
 
 runMultiply :: (Num a) => Expression a -> Expression a -> Expression a
-runMultiply = update2 Multiply (*)
+runMultiply = update2 Multiply (\x y -> Number $ x * y)
 
 runIf :: Expression Bool -> Expression a -> Expression a -> Expression a
-runIf p l r = parseFirst
-  where
-    parseFirst = either updateFirst wrapOperation (stepExpression p)
-    updateFirst x = If x l r
-    wrapOperation x = if x then l else r
+runIf p l r = update1 updateFirst wrapOperation p
+  where updateFirst x = If x l r
+        wrapOperation x = if x then l else r
 
 runLessThan :: (Ord a, Show a) => Expression a -> Expression a -> Expression Bool
-runLessThan l r = parseLeft
-  where
-    parseLeft = either updateLeft parseRight (stepExpression l)
-    parseRight x = either updateRight (wrapOperation x) (stepExpression r)
-    updateLeft x = LessThan x r
-    updateRight = LessThan l
-    wrapOperation x y = Boolean (x < y)
+runLessThan l r = update2 LessThan wrapOperation l r
+  where wrapOperation x y = Boolean (x < y)
 
 reduceExpression :: Expression a -> a
 reduceExpression (Number x) = x
