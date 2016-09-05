@@ -1,6 +1,7 @@
-module Lib
-    ( someFunc
-    ) where
+ module Lib (
+  Reducible(..),
+  Expression(..)
+) where
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+import Reducible
+import Expression
