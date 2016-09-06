@@ -33,15 +33,15 @@ stepExpression (If p l r) = Left $ runIf p l r
 stepExpression (LessThan l r) = Left $ runLessThan l r
 
 update1 :: (Expression t -> Expression a) -> (t -> Expression a) -> Expression t -> Expression a
-update1 key f x1 = either key f (stepExpression x1)
+update1 onFailure onSuccess x1 = either onFailure onSuccess (stepExpression x1)
 
 update2 :: (Expression t1 -> Expression t2 -> Expression a) -> (t1 -> t2 -> Expression a) -> Expression t1 -> Expression t2 -> Expression a
-update2 key f l r = parseLeft
+update2 onFailure onSuccess l r = parseLeft
   where
     parseLeft = update1 updateLeft parseRight l
-    parseRight x = update1 updateRight (f x) r
-    updateLeft x = key x r
-    updateRight = key l
+    parseRight x = update1 updateRight (onSuccess x) r
+    updateLeft x = onFailure x r
+    updateRight = onFailure l
 
 runAdd :: (Num a) => Expression a -> Expression a -> Expression a
 runAdd = update2 Add (\x y -> Number $ x + y)
