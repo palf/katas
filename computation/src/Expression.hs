@@ -28,6 +28,12 @@ instance Reducible Expression where
   step = stepExpression
   reduce = reduceExpression
 
+type Key = String
+type Environment a = Map.Map Key (Expression a)
+
+makeEnvironment :: [(Key, Expression a)] -> Environment a
+makeEnvironment pairs = Map.fromList pairs
+
 reduceExpression :: Expression a -> a
 reduceExpression (Number x) = x
 reduceExpression e = either reduceExpression id (stepExpression e)
@@ -66,9 +72,6 @@ runIf p l r = update1 updateFirst wrapOperation p
 runLessThan :: (Ord a, Show a) => Expression a -> Expression a -> Expression Bool
 runLessThan = update2 LessThan wrapOperation
   where wrapOperation x y = Boolean (x < y)
-
-type Key = String
-type Environment a = Map.Map Key (Expression a)
 
 runVariable :: Key -> Environment a -> Expression a
 runVariable k env = Maybe.fromJust (Map.lookup k env)

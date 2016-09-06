@@ -2,11 +2,14 @@ module Main (main) where
 
 import Lib
 
+env :: Environment Int
+env = makeEnvironment [("x", Add (Number 4) (Number 8))]
+
 someExpression :: Expression Int
 someExpression = x8
   where x1 = Number 5
         x2 = Number 3
-        x3 = Number 2
+        x3 = Variable "x" env
         x4 = Add x2 x3
         x5 = Add x1 x4
         x6 = Multiply x4 x5

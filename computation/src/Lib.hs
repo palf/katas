@@ -1,7 +1,9 @@
  module Lib (
   Reducible(..),
   stepReduceM,
-  Expression(..)
+  Expression(..),
+  Environment,
+  makeEnvironment
 ) where
 
 import Reducible
