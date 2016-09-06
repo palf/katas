@@ -2,6 +2,8 @@
 module Expression where
 
 import Reducible
+import qualified Data.Map as Map
+import qualified Data.Maybe as Maybe
 
 data Expression a where
   Boolean :: Bool -> Expression Bool
@@ -10,6 +12,7 @@ data Expression a where
   Multiply :: (Num a) => Expression a -> Expression a -> Expression a
   If :: Expression Bool -> Expression a -> Expression a -> Expression a
   LessThan :: (Ord a, Show a) => Expression a -> Expression a -> Expression Bool
+  Variable :: Key -> Environment a -> Expression a
 
 instance (Show a) => Show (Expression a) where
   show (Boolean p) = "(b: " ++ show p ++ ")"
@@ -18,11 +21,16 @@ instance (Show a) => Show (Expression a) where
   show (Multiply l r) = "(multiply: " ++ show l ++ ", " ++ show r ++ ")"
   show (If p l r) = "(if: " ++ show p ++ " then: " ++ show l ++ " else: " ++ show r ++ ")"
   show (LessThan l r) = "(<: " ++ show l ++ ", " ++ show r ++ ")"
+  show (Variable k _) = "(var: " ++ show k ++ ")"
   -- show _ = "(?:)"
 
 instance Reducible Expression where
   step = stepExpression
   reduce = reduceExpression
+
+reduceExpression :: Expression a -> a
+reduceExpression (Number x) = x
+reduceExpression e = either reduceExpression id (stepExpression e)
 
 stepExpression :: Expression a -> Either (Expression a) a
 stepExpression (Boolean p) = Right p
@@ -31,6 +39,7 @@ stepExpression (Add l r) = Left $ runAdd l r
 stepExpression (Multiply l r) = Left $ runMultiply l r
 stepExpression (If p l r) = Left $ runIf p l r
 stepExpression (LessThan l r) = Left $ runLessThan l r
+stepExpression (Variable k env) = Left $ runVariable k env
 
 update1 :: (Expression t -> Expression a) -> (t -> Expression a) -> Expression t -> Expression a
 update1 onFailure onSuccess x = either onFailure onSuccess (stepExpression x)
@@ -58,6 +67,8 @@ runLessThan :: (Ord a, Show a) => Expression a -> Expression a -> Expression Boo
 runLessThan = update2 LessThan wrapOperation
   where wrapOperation x y = Boolean (x < y)
 
-reduceExpression :: Expression a -> a
-reduceExpression (Number x) = x
-reduceExpression e = either reduceExpression id (stepExpression e)
+type Key = String
+type Environment a = Map.Map Key (Expression a)
+
+runVariable :: Key -> Environment a -> Expression a
+runVariable k env = Maybe.fromJust (Map.lookup k env)
