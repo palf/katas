@@ -18,7 +18,7 @@ instance (Show a) => Show (Expression a) where
   show (Multiply l r) = "(multiply: " ++ show l ++ ", " ++ show r ++ ")"
   show (If p l r) = "(if: " ++ show p ++ " then: " ++ show l ++ " else: " ++ show r ++ ")"
   show (LessThan l r) = "(<: " ++ show l ++ ", " ++ show r ++ ")"
-  show _ = "(?:)"
+  -- show _ = "(?:)"
 
 instance Reducible Expression where
   step = stepExpression
@@ -33,7 +33,7 @@ stepExpression (If p l r) = Left $ runIf p l r
 stepExpression (LessThan l r) = Left $ runLessThan l r
 
 update1 :: (Expression t -> Expression a) -> (t -> Expression a) -> Expression t -> Expression a
-update1 onFailure onSuccess x1 = either onFailure onSuccess (stepExpression x1)
+update1 onFailure onSuccess x = either onFailure onSuccess (stepExpression x)
 
 update2 :: (Expression t1 -> Expression t2 -> Expression a) -> (t1 -> t2 -> Expression a) -> Expression t1 -> Expression t2 -> Expression a
 update2 onFailure onSuccess l r = parseLeft
@@ -55,7 +55,7 @@ runIf p l r = update1 updateFirst wrapOperation p
         wrapOperation x = if x then l else r
 
 runLessThan :: (Ord a, Show a) => Expression a -> Expression a -> Expression Bool
-runLessThan l r = update2 LessThan wrapOperation l r
+runLessThan = update2 LessThan wrapOperation
   where wrapOperation x y = Boolean (x < y)
 
 reduceExpression :: Expression a -> a

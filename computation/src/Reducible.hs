@@ -10,6 +10,6 @@ class Reducible t where
 
 stepReduceM :: (Monad m, Reducible t) => t a -> (t a -> m b) -> m ()
 stepReduceM box op = do
-  op box
+  _ <- op box
   either (`stepReduceM` op) void (step box)
-    where void x = return ()
+    where void _ = return ()
