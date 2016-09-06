@@ -9,7 +9,7 @@ someExpression :: Expression Int
 someExpression = x8
   where x1 = Number 5
         x2 = Number 3
-        x3 = Variable "x" env
+        x3 = ReadVariable "x" env
         x4 = Add x2 x3
         x5 = Add x1 x4
         x6 = Multiply x4 x5
