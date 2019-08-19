@@ -7,7 +7,7 @@
 - Extensible! (that's a lie)
 - Low fat!
 
-I set out to make the most refactored version of FizzBuzz I could think of. I'm unsure where else I could take it from here (except inlining a few variables). I could certainly bring in a library for some of the iterators (I'm thinking [Underscore.js](underscorejs.org)).
+I set out to make the most refactored version of FizzBuzz I could think of. I'm unsure where else I could take it from here (except inlining a few variables). I could certainly bring in a library for some of the iterators.
 
 I spent nearly three hours on this. I did have a sandwich in the middle though.
 
@@ -15,11 +15,8 @@ I spent nearly three hours on this. I did have a sandwich in the middle though.
 
 - Install Node.js
 - Get the code (git clone or just copy it)
-
-- In your termimal, run `node test` to run the tests.
-- In your code, add `var fizzbuzz = require('path/to/fizzbuzz/file')`; then you can call `fizzbuzz(x)` in your code
-    - replace the path/to/file etc with the actual path
-    - replace (x) with a numerical value (3 is nice)
+- for linting, you can run `npm install` followed by `npm run lint`
+- In your termimal, run `npm run test` to run the tests.
 
 ## Issues / Analysis
 
